@@ -1,0 +1,89 @@
+#include<SoftwareSerial.h> 
+char data = 0; 
+const int sensor_pin = A1; 
+float moisture_percentage; 
+#include<AFMotor.h> 
+AF_DCMotor motor1(1); 
+AF_DCMotor motor2(2); 
+AF_DCMotor motor3(3); 
+AF_DCMotor motor4(4); 
+void setup() 
+{ 
+   Serial.begin(9600); 
+   //Serial.begin(9600); 
+   motor1.setSpeed(2000); 
+   motor2.setSpeed(2000); 
+   motor3.setSpeed(2000); 
+   motor4.setSpeed(2000); 
+} 
+void loop() 
+{ 
+  if(Serial.available() > 0) 
+   { 
+    data = Serial.read(); 
+    if(data == 'F') 
+     { 
+      Serial.print(data); 
+      Serial.print("=> Forward"); 
+      Serial.print("\n"); 
+      motor1.run(FORWARD); 
+      motor3.run(FORWARD); 
+     } 
+  else if(data == 'B') 
+  { 
+	Serial.print(data); 
+	Serial.print("=> Backward"); 
+	Serial.print("\n"); 
+	motor1.run(BACKWARD); 
+	motor3.run(BACKWARD); 
+   } 
+  else if(data == 'R') 
+  { 
+	Serial.print(data); 
+	Serial.print("=> Rightward"); 
+	Serial.print("\n"); 
+	motor1.run(FORWARD); 
+	motor3.run(BACKWARD);
+  } 
+  else if(data == 'L') 
+  { 
+	Serial.print(data); 
+	Serial.print("=> Leftward"); 
+	Serial.print("\n"); 
+	motor1.run(BACKWARD); 
+	motor3.run(FORWARD); 
+  } 
+  else if(data == 'S') 
+  { 
+	Serial.print(data); 
+	Serial.print("=> Stopped"); 
+	motor1.run(RELEASE); 
+	motor2.run(RELEASE); 
+	motor3.run(RELEASE); 
+	motor4.run(RELEASE); 
+  } 
+  else if(data == 'M') 
+  { 
+   while(analogRead(sensor_pin!=0))
+   { 
+	int sensor_analog; 
+	sensor_analog = analogRead(sensor_pin); 
+	moisture_percentage = map(sensor_analog,550,10,0,100); 
+	if (moisture_percentage <25) 
+     { 
+	 motor2.run(FORWARD); 
+	 delay(10000); 
+	 motor2.run(RELEASE); 
+	 Serial.print(moisture_percentage); 
+	 Serial.print('%'); 
+	 break; 
+	} 
+    Serial.print("\n"); 
+    Serial.print(data); 
+    Serial.print(moisture_percentage); 
+    Serial.print('%'); 
+    break; 
+   } 
+  } 
+ } 
+}  
